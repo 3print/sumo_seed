@@ -1,4 +1,4 @@
-# :seedling: SumoSeed
+# :seedling: SumoSeed [![Build Status](https://travis-ci.org/3print/sumo_seed.svg?branch=master)](https://travis-ci.org/3print/sumo_seed)
 
 This project rocks and uses MIT-LICENSE.
 
