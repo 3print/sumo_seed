@@ -63,6 +63,7 @@ GEM
     mime-types-data (3.2016.0521)
     mimemagic (0.3.1)
     minitest (5.9.0)
+    pg (0.18.4)
     rack (1.5.5)
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -124,6 +125,7 @@ DEPENDENCIES
   database_cleaner
   factory_girl_rails
   faker
+  pg
   rspec (~> 3.3.0)
   rspec-rails
   sqlite3
