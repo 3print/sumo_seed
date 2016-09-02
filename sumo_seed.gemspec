@@ -14,10 +14,16 @@ Gem::Specification.new do |s|
   s.description   = 'A seeding engine for rails projects'
   s.license       = 'MIT'
 
-  s.add_development_dependency "rspec", "~> 3.3.0"
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
 
   s.add_dependency "rails", "~> 4.1.5"
+  s.add_dependency "colorize"
 
   s.add_development_dependency "sqlite3"
+  s.add_development_dependency "factory_girl_rails"
+  s.add_development_dependency "faker"
+  s.add_development_dependency "rspec-rails"
+  s.add_development_dependency "rspec", "~> 3.3.0"
+  s.add_development_dependency "database_cleaner"
+  s.add_development_dependency "carrierwave"
 end
