@@ -7,11 +7,11 @@ rvm:
 script:
 - bundle exec rspec
 
-before_script:
-- cp spec/dummy/config/database.travis.yml spec/dummy/config/database.yml
-- cd spec/dummy && bundle exec rake db:drop
-- cd spec/dummy && bundle exec rake db:create
-- cd spec/dummy && bundle exec rake db:migrate
+# before_script:
+# - cp spec/dummy/config/database.travis.yml spec/dummy/config/database.yml
+# - cd spec/dummy && bundle exec rake db:drop
+# - cd spec/dummy && bundle exec rake db:create
+# - cd spec/dummy && bundle exec rake db:migrate
 
 env:
   global:
