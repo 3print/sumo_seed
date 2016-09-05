@@ -43,6 +43,8 @@ class Seeder
 
       seeds.each do |data|
         env = data.delete(:env)
+        _file = data.delete(:_file)
+        _index = data.delete(:_index)
 
         next if env.present? && !env.include?(Rails.env)
 
@@ -89,6 +91,26 @@ class Seeder
           if model.present?
             output failed(model, e)
           else
+            msg = [
+              ' ',
+              '✕'.red,
+              "Can't process seeds".light_black,
+              data
+            ]
+
+            if _file.present?
+              msg +=  [
+                "at index".light_black,
+                _index.to_s.red,
+                "from file".light_black,
+                _file.to_s.red
+              ]
+            end
+
+            msg << "\n"
+
+            print msg.join(' ')
+
             raise e
           end
         end
@@ -119,25 +141,24 @@ class Seeder
         paths.reject! {|f| f == config }
 
         settings = load_file(config).with_indifferent_access
-
-        seed.settings.merge!(settings)
-        seed.seeds += paths.map {|ff|
+        new_seeds = paths.map {|ff|
           data = load_seed(ff, model_class)
           data[:seeds].present? ? data[:seeds] : data
         }.compact.flatten
       else
         settings = load_seed(f, model_class)
-
-        seed.seeds += settings.delete(:seeds) || []
-        seed.settings.merge!(settings)
+        new_seeds = settings.delete(:seeds) || []
       end
 
-      if seed.seeds.blank?
-        raise "empty seeds for #{model_class}"
+      new_seeds.each_with_index do |s,i|
+        s[:_file] = f
+        s[:_index] = i
       end
+
+      seed.seeds += new_seeds
+      seed.settings.merge!(settings)
 
       env = seed.env
-      seed.file = f
       seed.ignore_in_query ||= []
       seed.model_class = model_class
       env.present? && !env.include?(Rails.env) ? nil : seed
@@ -154,7 +175,7 @@ class Seeder
     when settings.is_a?(Array)
       settings = { seeds: settings }
     else
-      raise "invalid seeds type for #{model_class}"
+      settings = {}
     end
 
     settings
@@ -199,7 +220,9 @@ class Seeder
   def cleanup_attributes(model_class, attrs)
     instance = model_class.new
 
-    Hash[attrs.select { |k,v| instance.respond_to?(:"#{k}=") }].with_indifferent_access
+    Hash[attrs.select do |k,v|
+      instance.respond_to?(:"#{k}=")
+    end].with_indifferent_access
   end
 
   def process_attributes(attrs)

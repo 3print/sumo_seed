@@ -6,8 +6,8 @@ def seeds_files(dir)
 end
 
 describe Seeder do
-  it 'raises an error on an empty seeds file' do
-    expect { Seeder.new(seeds_files('empty')).load }.to raise_error("invalid seeds type for User")
+  it 'does not raise an error on an empty seeds file' do
+    expect { Seeder.new(seeds_files('empty')).load }.not_to raise_error
   end
 
   it 'raises an error on an empty seeds file' do
@@ -23,7 +23,7 @@ describe Seeder do
   context 'with an options hash at the top level' do
     context 'that does not contain a seeds key' do
       it 'raises an error' do
-        expect { Seeder.new(seeds_files('no_seeds')).load }.to raise_error("empty seeds for User")
+        expect { Seeder.new(seeds_files('no_seeds')).load }.not_to raise_error
       end
     end
 
