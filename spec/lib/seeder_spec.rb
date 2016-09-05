@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'seeder'
 
 def seeds_files(dir)
-  Dir[File.join(config.fixture_path, 'seeds', dir, "*.yml")]
+  Dir[File.join(config.fixture_path, 'seeds', dir, "*")]
 end
 
 describe Seeder do
@@ -50,6 +50,14 @@ describe Seeder do
         expect { Seeder.new(seeds_files('priority')).load }.to change { SeoMeta.count }.by 1
 
         expect(SeoMeta.first.meta_owner).to eq(User.first)
+      end
+    end
+  end
+
+  context 'with a directory of seed files' do
+    context 'with a config.yml' do
+      it 'loads the seeds using the provided config' do
+        expect { Seeder.new(seeds_files('top_directory')).load }.to change { SeoMeta.count }.by 2
       end
     end
   end
