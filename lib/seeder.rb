@@ -90,9 +90,9 @@ class Seeder
       model_class = File.basename(f, '.yml').classify.constantize
 
       if File.directory?(f)
-        paths = Dir[File.join(f, '**/*.yml')]
+        paths = Dir[File.join(f, '**/{*,.*}.yml')]
 
-        config = paths.select {|f| File.basename(f, '.yml') == 'config' }.first
+        config = paths.select {|f| File.basename(f, '.yml') == '.seed' }.first
         paths.reject! {|f| f == config }
 
         settings = load_file(config).with_indifferent_access
