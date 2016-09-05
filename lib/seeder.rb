@@ -94,7 +94,7 @@ class Seeder
             msg = [
               ' ',
               '✕'.red,
-              "Can't process seeds".light_black,
+              "Can't process seed".light_black,
               data
             ]
 
@@ -226,11 +226,11 @@ class Seeder
   end
 
   def process_attributes(attrs)
-    Hash[attrs.map do |k,v|
+    Hash[attrs.with_indifferent_access.map do |k,v|
       if v.is_a?(Hash)
-        v = process_attribute_value(v)
+        v = process_attribute_value(v.with_indifferent_access)
       elsif v.is_a?(Array)
-        v = v.map {|vv| vv.is_a?(Hash) ? process_attribute_value(vv) : vv }
+        v = v.map {|vv| vv.is_a?(Hash) ? process_attribute_value(vv.with_indifferent_access) : vv }
       end
 
       [k,v]
