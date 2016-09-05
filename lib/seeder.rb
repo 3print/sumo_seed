@@ -146,7 +146,7 @@ class Seeder
           data[:seeds].present? ? data[:seeds] : data
         }.compact.flatten
       else
-        settings = load_seed(f, model_class)
+        settings = load_seed(f, model_class).with_indifferent_access
         new_seeds = settings.delete(:seeds) || []
       end
 
@@ -175,7 +175,7 @@ class Seeder
     when settings.is_a?(Array)
       settings = { seeds: settings }
     else
-      settings = {}
+      settings = {}.with_indifferent_access
     end
 
     settings
