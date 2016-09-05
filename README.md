@@ -18,6 +18,20 @@ end
 
 This will invoke the SumoSeed task when running `rake db:seed`. By default the task will look in the `db/seeds` directory of your app for seed files.
 
+### Task Configuration
+
+The seed task can be customized through environment variables passed after the rake command to execute:
+
+```sh
+rake db:seed models=users,posts upsert=1 seed_path=path/to/seeds
+```
+
+- `models` - A commas separated list of seeds to loads. The names should match those of the seeds files and directories.
+- `upsert` - By default, existing record are ignored. The upsert mode will the allow to update existing models using the current data from the seed.
+- `seed_path` - If your seeds aren't located in `db/seeds` you can use this setting to change the path to the seeds directory relatively to the project root.
+
+### Seeds
+
 Seeds are a defined as a collection of hashes in one or more yaml files.
 
 The following directory structures are possible and can be mixed together:
@@ -47,24 +61,28 @@ The seed file must have the same name as the resource, meaning the underscore
 pluralized version of the model name.
 
 The seed file can have two format:
-* In the first format, the record list is the only content of the seed file:
-  ```yaml
-  - name: record 1
-    some_attribute: some value
-  - name: record 2
-    some_attribute: some other value
-  ```
-* In the second format, the record list is stored in a `seeds` key into a
-  hash:
-  ```yaml
-  seeds:
-  - name: record 1
-    some_attribute: some value
-  - name: record 2
-    some_attribute: some other value
-  ```
-  This second form allow to specify some additional options for the seeding
-  task.
+
+In the first format, the record list is the only content of the seed file:
+
+```yaml
+- name: record 1
+  some_attribute: some value
+- name: record 2
+  some_attribute: some other value
+```
+
+In the second format, the record list is stored in a `seeds` key into a hash:
+
+```yaml
+seeds:
+- name: record 1
+  some_attribute: some value
+- name: record 2
+  some_attribute: some other value
+```
+
+This second form allow to specify some additional options for the seeding
+task.
 
 #### Several files for a single model
 
