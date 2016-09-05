@@ -62,6 +62,14 @@ describe Seeder do
     end
   end
 
+  context 'with both a directory of seed files and a file with the model name' do
+    context 'with a config.yml' do
+      it 'loads the seeds using the provided config' do
+        expect { Seeder.new(seeds_files('both_directory_and_file')).load }.to change { SeoMeta.count }.by 4
+      end
+    end
+  end
+
   describe 'custom attribute expressions' do
     describe '_find:' do
       let(:user) { create :user, email: 'foo@foo.com'}

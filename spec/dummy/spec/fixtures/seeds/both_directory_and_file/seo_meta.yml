@@ -1,0 +1,8 @@
+use_in_query:
+- title
+- description
+seeds:
+- title: title
+  description: description 3
+  static_mode: true
+  static_action: foo

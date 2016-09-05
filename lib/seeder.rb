@@ -5,6 +5,25 @@ class Seeder
   attr_accessor :seeds
   attr_accessor :options
 
+  class Seed
+    attr_accessor :settings, :seeds
+
+    def initialize(settings={}, seeds=[])
+      self.settings = settings.with_indifferent_access
+      self.seeds = seeds
+    end
+
+    %w(env file model_class priority ignore_in_query use_in_query base_scope find_by ignore_unknown_attributes).each do |k|
+      define_method k do
+        self.settings[k]
+      end
+
+      define_method "#{k}=" do |value|
+        self.settings[k] = value
+      end
+    end
+  end
+
   def initialize(paths, options={})
     self.paths = paths
     self.options = options.reverse_merge({
@@ -13,31 +32,31 @@ class Seeder
   end
 
   def load
-    all_seeds.each do |seeds_settings|
-      model_class = seeds_settings[:class]
-      seeds = seeds_settings[:seeds]
-      ignores = seeds_settings[:ignore_in_query] || []
-      base_scope = seeds_settings[:base_scope].present? ? eval(seeds_settings[:base_scope]) : model_class
-      uses = seeds_settings[:find_by] || seeds_settings[:use_in_query] || []
+    all_seeds.each do |seed|
+      model_class = seed.model_class
+      seeds = seed.seeds
+      ignores = seed.ignore_in_query || []
+      base_scope = seed.base_scope.present? ? eval(seed.base_scope) : model_class
+      uses = seed.find_by || seed.use_in_query || []
 
       output "\n#{model_class}\n"
 
-      seeds.each do |seed|
-        env = seed.delete(:env)
+      seeds.each do |data|
+        env = data.delete(:env)
 
         next if env.present? && !env.include?(Rails.env)
 
-        if seeds_settings[:ignore_unknown_attributes]
-          seed = cleanup_attributes(model_class, seed)
+        if seed.ignore_unknown_attributes
+          data = cleanup_attributes(model_class, data)
         end
 
-        seed = process_attributes(seed)
+        data = process_attributes(data)
 
-        query = as_query(model_class, seed, ignores, uses)
+        query = as_query(model_class, data, ignores, uses)
         begin
           unless model = find_existing_seed(base_scope, query)
             ActiveRecord::Base.transaction do
-              model = model_class.new(seed)
+              model = model_class.new(data)
               yield model if block_given?
               model.save!
             end
@@ -45,7 +64,7 @@ class Seeder
           else
             if options[:upsert]
               ActiveRecord::Base.transaction do
-                seed.each_pair do |k,v|
+                data.each_pair do |k,v|
                   begin
                     model.send("#{k}=", v) if model.send(k) != v
                   rescue => e
@@ -86,8 +105,12 @@ class Seeder
   end
 
   def all_seeds
+    seeds_by_class = {}
+
     self.seeds ||= paths.map do |f|
       model_class = File.basename(f, '.yml').classify.constantize
+
+      seed = seeds_by_class[model_class] ||= Seed.new
 
       if File.directory?(f)
         paths = Dir[File.join(f, '**/{*,.*}.yml')]
@@ -97,26 +120,29 @@ class Seeder
 
         settings = load_file(config).with_indifferent_access
 
-
-        settings[:seeds] = paths.map {|ff|
-          seed = load_seed(ff, model_class)
-          seed[:seeds].present? ? seed[:seeds] : seed
+        seed.settings.merge!(settings)
+        seed.seeds += paths.map {|ff|
+          data = load_seed(ff, model_class)
+          data[:seeds].present? ? data[:seeds] : data
         }.compact.flatten
       else
         settings = load_seed(f, model_class)
+
+        seed.seeds += settings.delete(:seeds) || []
+        seed.settings.merge!(settings)
       end
 
-      if settings[:seeds].blank?
+      if seed.seeds.blank?
         raise "empty seeds for #{model_class}"
       end
 
-      env = settings[:env]
-      settings[:file] = f
-      settings[:ignore_in_query] ||= []
-      settings[:class] = model_class
-      env.present? && !env.include?(Rails.env) ? nil : settings
+      env = seed.env
+      seed.file = f
+      seed.ignore_in_query ||= []
+      seed.model_class = model_class
+      env.present? && !env.include?(Rails.env) ? nil : seed
 
-    end.compact.sort {|a,b| (a[:priority] || 0) - (b[:priority] || 0) }
+    end.compact.sort {|a,b| (a.priority || 0) - (b.priority || 0) }
   end
 
   def load_seed(f, model_class)
