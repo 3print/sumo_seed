@@ -6,7 +6,10 @@ module SumoSeed
   end
 
   def self.run_task
-    seed_path = [Rails.root, ENV['seed_path'].split('/')].flatten || self.seed_path
+    seed_path = ENV['seed_path'] ?
+      [Rails.root, ENV['seed_path'].split('/')].flatten :
+      self.seed_path
+
     model_collection = ENV['model'] || '*'
     models_collection = ENV['models'] ? ENV['models'].split(',') : [model_collection]
     upsert = ENV['upsert'] == '1'
