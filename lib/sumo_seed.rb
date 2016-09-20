@@ -25,9 +25,5 @@ module SumoSeed
     }.flatten.uniq
 
     Seeder.new(dirs, upsert: upsert).load
-
-    if model_collection == 'stores'
-      Store.all.each { |s| s.create_default_pages! }
-    end
   end
 end
