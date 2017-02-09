@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sumo_seed (0.0.1)
+    sumo_seed (0.0.2)
       colorize
       rails (>= 4.1)
 
