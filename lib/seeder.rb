@@ -163,7 +163,7 @@ class Seeder
       end
 
       seed.seeds += new_seeds
-      seed.settings.merge!(settings)
+      seed.settings.merge!(settings) if settings
 
       env = seed.env
       seed.ignore_in_query ||= []

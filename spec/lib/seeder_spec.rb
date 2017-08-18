@@ -20,6 +20,12 @@ describe Seeder do
     end
   end
 
+  context 'with a _files folder' do
+    it 'creates on record for entry in the list' do
+      expect { Seeder.new(seeds_files('with_files')).load }.to change { SeoMeta.count }.by 2
+    end
+  end
+
   context 'with an options hash at the top level' do
     context 'that does not contain a seeds key' do
       it 'raises an error' do
@@ -87,6 +93,18 @@ describe Seeder do
       it 'performs a queries using the specified argument' do
         seeder = Seeder.new(seeds_files('attribute_asset'), {
           asset_path: File.join(Rails.root, 'spec', 'fixtures')
+        })
+
+        expect { seeder.load }.to change { User.count }.by 1
+
+        expect(User.first.avatar).to be_present
+      end
+    end
+
+    describe '_file:' do
+      it 'performs a queries using the specified argument' do
+        seeder = Seeder.new(seeds_files('attribute_file'), {
+          file_path: File.join(Rails.root, 'spec', 'fixtures', 'seeds', '_files')
         })
 
         expect { seeder.load }.to change { User.count }.by 1
