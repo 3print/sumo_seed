@@ -28,6 +28,7 @@ class Seeder
     self.paths = paths.sort
     self.options = options.reverse_merge({
       asset_path: File.join(Rails.root, 'app', 'assets'),
+      file_path: File.join(Rails.root, 'db', 'seeds', 'files'),
     })
   end
 
@@ -250,6 +251,8 @@ class Seeder
       v = filter_resources(m.constantize).where(q).first
     elsif v.has_key?(:_asset)
       v = File.open(resolve_img_path v[:_asset])
+    elsif v.has_key?(:_file)
+      v = File.open(resolve_file_path v[:_file])
     elsif v.has_key?(:_eval)
       v = eval(v[:_eval])
     else
@@ -296,6 +299,10 @@ class Seeder
 
   def resolve_img_path(img)
     File.expand_path(img, options[:asset_path]).to_s
+  end
+
+  def resolve_file_path(img)
+    File.expand_path(img, options[:file_path]).to_s
   end
 
   def resource_label_for(resource)
