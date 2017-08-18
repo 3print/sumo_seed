@@ -28,7 +28,7 @@ class Seeder
     self.paths = paths.sort
     self.options = options.reverse_merge({
       asset_path: File.join(Rails.root, 'app', 'assets'),
-      file_path: File.join(Rails.root, 'db', 'seeds', 'files'),
+      file_path: File.join(Rails.root, 'db', 'seeds', '_files'),
     })
   end
 
