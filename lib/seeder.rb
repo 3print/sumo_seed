@@ -137,7 +137,7 @@ class Seeder
 
       if File.directory?(f)
         new_seeds = []
-        unless !File.basename(f)[0] == "_"
+        unless File.basename(f)[0] == "_"
           paths = Dir[File.join(f, '**/{*,.*}.yml')]
 
           config = paths.select {|f| File.basename(f, '.yml') == '.seed' }.first
