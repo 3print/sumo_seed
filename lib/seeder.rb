@@ -44,8 +44,8 @@ class Seeder
 
       seeds.each do |data|
         env = data.delete(:env)
-        _file = data.delete(:_file)
-        _index = data.delete(:_index)
+        __file = data.delete(:__file)
+        __index = data.delete(:__index)
 
         next if env.present? && !env.include?(Rails.env)
 
@@ -99,12 +99,12 @@ class Seeder
               data
             ]
 
-            if _file.present?
+            if __file.present?
               msg +=  [
                 "at index".light_black,
-                _index.to_s.red,
+                __index.to_s.red,
                 "from file".light_black,
-                _file.to_s.red
+                __file.to_s.red
               ]
             end
 
@@ -152,8 +152,8 @@ class Seeder
       end
 
       new_seeds.each_with_index do |s,i|
-        s[:_file] = f
-        s[:_index] = i
+        s[:__file] = f
+        s[:__index] = i
       end
 
       seed.seeds += new_seeds
