@@ -136,16 +136,22 @@ class Seeder
       seed = seeds_by_class[model_class] ||= Seed.new
 
       if File.directory?(f)
-        paths = Dir[File.join(f, '**/{*,.*}.yml')]
+        new_seeds = []
+        unless !File.basename(f)[0] == "_"
+          paths = Dir[File.join(f, '**/{*,.*}.yml')]
 
-        config = paths.select {|f| File.basename(f, '.yml') == '.seed' }.first
-        paths.reject! {|f| f == config }
+          config = paths.select {|f| File.basename(f, '.yml') == '.seed' }.first
+          if config.present?
+            paths.reject! {|f| f == config }
 
-        settings = load_file(config).with_indifferent_access
-        new_seeds = paths.map {|ff|
-          data = load_seed(ff, model_class)
-          data[:seeds].present? ? data[:seeds] : data
-        }.compact.flatten
+
+            settings = load_file(config).with_indifferent_access
+            new_seeds = paths.map {|ff|
+              data = load_seed(ff, model_class)
+              data[:seeds].present? ? data[:seeds] : data
+            }.compact.flatten
+          end
+        end
       else
         settings = load_seed(f, model_class).with_indifferent_access
         new_seeds = settings.delete(:seeds) || []
