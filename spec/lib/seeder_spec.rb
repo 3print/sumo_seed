@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'seeder'
 
 def seeds_files(dir)
-  Dir[File.join(config.fixture_path, 'seeds', dir, "*")]
+  Dir[File.join(::Rails.root,"spec","fixtures", 'seeds', dir, "*")]
 end
 
 describe Seeder do

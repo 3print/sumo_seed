@@ -2,7 +2,7 @@
 ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../dummy/config/environment", __FILE__)
 require 'rspec/rails'
-require 'factory_girl_rails'
+require 'factory_bot_rails'
 require 'faker'
 require 'database_cleaner'
 require 'carrierwave'
@@ -43,7 +43,7 @@ CarrierWave.configure do |config|
 end
 
 RSpec.configure do |config|
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
@@ -97,8 +97,8 @@ RSpec.configure do |config|
 
   Kernel.srand config.seed
 
-  FactoryGirl.definition_file_paths.map! {|p| "spec/dummy/#{p}"}
-  FactoryGirl.find_definitions
+  FactoryBot.definition_file_paths.map! {|p| "spec/dummy/#{p}"}
+  FactoryBot.find_definitions
 
   config.before(:suite) do
     DatabaseCleaner.clean_with(:truncation)
